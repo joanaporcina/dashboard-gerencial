@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapeamento de Oportunidades Gabriel - Gerencial - Janeiro 2026</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --gabriel-green: #4ADE80;
+            --gabriel-light: #6EE7B7;
+            --primary: #020617;
+            --secondary: #0a0f1e;
+            --accent: #4ADE80;
+            --text: #e2e8f0;
+            --text-dim: #94a3b8;
+            --card-bg: #0f172a;
+            --warning: #fbbf24;
+            --danger: #ef4444;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 2rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(74, 222, 128, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(110, 231, 183, 0.06) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 3rem;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .logo-container {
+            width: 90px;
+            height: 90px;
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .chameleon-svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 10px 30px rgba(74, 222, 128, 0.4));
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(-5deg); }
+            50% { transform: translateY(-15px) rotate(5deg); }
+        }
+
+        .header-text h1 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--gabriel-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.25rem;
+            letter-spacing: 1px;
+        }
+
+        .header-text p {
+            color: var(--text-dim);
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .header-badge {
+            background: rgba(74, 222, 128, 0.15);
+            border: 2px solid var(--accent);
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 700;
+            color: var(--accent);
+            font-size: 0.875rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+            animation: fadeInUp 0.8s ease 0.2s backwards;
+        }
+
+        .kpi-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 1.75rem;
+            border: 1px solid rgba(74, 222, 128, 0.15);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent), var(--gabriel-light));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+            box-shadow: 0 15px 30px rgba(74, 222, 128, 0.2);
+        }
+
+        .kpi-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .kpi-label {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .kpi-value {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--accent);
+            line-height: 1;
+            margin-bottom: 0.25rem;
+        }
+
+        .kpi-card.warning .kpi-value {
+            color: var(--warning);
+        }
+
+        .kpi-card.danger .kpi-value {
+            color: var(--danger);
+        }
+
+        .kpi-card.success .kpi-value {
+            color: var(--gabriel-light);
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(74, 222, 128, 0.15);
+            animation: fadeInUp 0.8s ease backwards;
+            transition: all 0.3s ease;
+        }
+
+        .chart-card.full {
+            grid-column: 1 / -1;
+        }
+
+        .chart-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 10px 30px rgba(74, 222, 128, 0.2);
+        }
+
+        .chart-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 320px;
+        }
+
+        .chart-container.tall {
+            height: 400px;
+        }
+
+        .insight-card {
+            background: linear-gradient(135deg, rgba(74, 222, 128, 0.12) 0%, rgba(110, 231, 183, 0.08) 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            border-left: 4px solid var(--accent);
+            margin-top: 1rem;
+            animation: fadeInUp 0.8s ease 0.6s backwards;
+        }
+
+        .insight-card h3 {
+            font-size: 1.5rem;
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 800;
+        }
+
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .insight-item {
+            background: rgba(15, 23, 42, 0.6);
+            padding: 1.5rem;
+            border-radius: 16px;
+            border-left: 3px solid var(--accent);
+            transition: all 0.3s ease;
+        }
+
+        .insight-item:hover {
+            background: rgba(74, 222, 128, 0.1);
+            transform: translateX(8px);
+            border-left-width: 5px;
+        }
+
+        .insight-number {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--accent);
+            margin-bottom: 0.75rem;
+            line-height: 1;
+        }
+
+        .insight-text {
+            color: var(--text);
+            line-height: 1.7;
+            font-size: 0.95rem;
+        }
+
+        .insight-text strong {
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .section-title {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--accent);
+            margin: 3rem 0 1.5rem 0;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        .section-title::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 6px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--accent), var(--gabriel-light));
+            border-radius: 3px;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 1200px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+            
+            .header-text h1 {
+                font-size: 2rem;
+            }
+            
+            .kpi-value {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-left">
+                <div class="logo-container">
+                    <svg class="chameleon-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                        <ellipse cx="100" cy="100" rx="70" ry="50" fill="url(#bodyGradient)" opacity="0.3"/>
+                        <path d="M 140 110 Q 160 100, 170 85 Q 175 70, 165 60 Q 155 55, 150 65 Q 148 75, 155 80" 
+                              stroke="url(#gradient1)" stroke-width="8" fill="none" stroke-linecap="round" opacity="0.8"/>
+                        <ellipse cx="100" cy="95" rx="45" ry="35" fill="url(#gradient1)"/>
+                        <ellipse cx="65" cy="85" rx="28" ry="30" fill="url(#gradient2)"/>
+                        <circle cx="60" cy="80" r="12" fill="#0f172a"/>
+                        <circle cx="60" cy="80" r="8" fill="url(#eyeGradient)"/>
+                        <circle cx="62" cy="78" r="3" fill="#ffffff"/>
+                        <ellipse cx="120" cy="120" rx="12" ry="8" fill="url(#gradient2)" transform="rotate(-20 120 120)"/>
+                        <ellipse cx="75" cy="115" rx="10" ry="7" fill="url(#gradient2)" transform="rotate(-30 75 115)"/>
+                        <circle cx="85" cy="90" r="4" fill="#6EE7B7" opacity="0.6"/>
+                        <circle cx="100" cy="88" r="4" fill="#4ADE80" opacity="0.6"/>
+                        <circle cx="115" cy="92" r="4" fill="#34D399" opacity="0.6"/>
+                        <circle cx="95" cy="102" r="3" fill="#6EE7B7" opacity="0.5"/>
+                        <circle cx="110" cy="100" r="3" fill="#4ADE80" opacity="0.5"/>
+                        <defs>
+                            <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#4ADE80;stop-opacity:1" />
+                                <stop offset="50%" style="stop-color:#34D399;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#10B981;stop-opacity:1" />
+                            </linearGradient>
+                            <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#6EE7B7;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#4ADE80;stop-opacity:1" />
+                            </linearGradient>
+                            <radialGradient id="eyeGradient">
+                                <stop offset="0%" style="stop-color:#4ADE80;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#10B981;stop-opacity:1" />
+                            </radialGradient>
+                            <radialGradient id="bodyGradient">
+                                <stop offset="0%" style="stop-color:#4ADE80;stop-opacity:0.3" />
+                                <stop offset="100%" style="stop-color:#4ADE80;stop-opacity:0" />
+                            </radialGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <div class="header-text">
+                    <h1>Mapeamento de Oportunidades</h1>
+                    <p>Dashboard Gerencial - Janeiro 2026</p>
+                </div>
+            </div>
+            <div class="header-badge">GERENCIAL</div>
+        </div>
+
+        <!-- KPIs Gerais -->
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-label">Total de Oportunidades</div>
+                <div class="kpi-value" id="total-oportunidades">33</div>
+            </div>
+            <div class="kpi-card danger">
+                <div class="kpi-label">Pendentes de Feedback</div>
+                <div class="kpi-value" id="pendentes">30</div>
+            </div>
+            <div class="kpi-card warning">
+                <div class="kpi-label">Taxa de Feedback</div>
+                <div class="kpi-value" id="taxa-feedback">9.1%</div>
+            </div>
+            <div class="kpi-card success">
+                <div class="kpi-label">Lideranças Ativas</div>
+                <div class="kpi-value" id="liderancas">4</div>
+            </div>
+        </div>
+
+        <!-- Análise Geral -->
+        <div class="charts-grid">
+            <div class="chart-card">
+                <div class="chart-title">Tipo de Oportunidade</div>
+                <div class="chart-container">
+                    <canvas id="chartTipoOportunidade"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <div class="chart-title">Pilares de Qualidade</div>
+                <div class="chart-container">
+                    <canvas id="chartPilares"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <div class="chart-title">Indicadores Impactados</div>
+                <div class="chart-container">
+                    <canvas id="chartIndicadores"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <div class="chart-title">Oportunidades por Time</div>
+                <div class="chart-container">
+                    <canvas id="chartTimes"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Análise por Liderança -->
+        <h2 class="section-title">🎯 Análise por Liderança</h2>
+
+        <div class="charts-grid">
+            <div class="chart-card">
+                <div class="chart-title">Oportunidades por Supervisor</div>
+                <div class="chart-container">
+                    <canvas id="chartSupervisores"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <div class="chart-title">Taxa de Feedback por Liderança</div>
+                <div class="chart-container">
+                    <canvas id="chartFeedbackLideranca"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card full">
+                <div class="chart-title">Pilares Impactados por Liderança</div>
+                <div class="chart-container tall">
+                    <canvas id="chartPilaresPorLideranca"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Análise por Analista -->
+        <h2 class="section-title">👤 Principais Analistas</h2>
+
+        <div class="charts-grid">
+            <div class="chart-card">
+                <div class="chart-title">Top 10 Analistas com Mais Oportunidades</div>
+                <div class="chart-container tall">
+                    <canvas id="chartAnalistas"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <div class="chart-title">Distribuição de Pilares - Top 5 Analistas</div>
+                <div class="chart-container tall">
+                    <canvas id="chartPilaresPorAnalista"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Insights Gerenciais -->
+        <div class="insight-card">
+            <h3>💡 Insights Gerenciais</h3>
+            <div class="insights-grid">
+                <div class="insight-item">
+                    <div class="insight-number">91%</div>
+                    <div class="insight-text">
+                        <strong>Taxa de pendência crítica</strong> - apenas 3 oportunidades tratadas de 33, requer atenção imediata
+                    </div>
+                </div>
+                <div class="insight-item">
+                    <div class="insight-number">45%</div>
+                    <div class="insight-text">
+                        <strong>Execução de Processos</strong> é o principal gap - revisar treinamentos e SOPs
+                    </div>
+                </div>
+                <div class="insight-item">
+                    <div class="insight-number">52%</div>
+                    <div class="insight-text">
+                        <strong>FCR mais impactado</strong> - priorizar resolução em primeiro contato nas capacitações
+                    </div>
+                </div>
+                <div class="insight-item">
+                    <div class="insight-number">27%</div>
+                    <div class="insight-text">
+                        <strong>Michel lidera em oportunidades</strong> - implementar plano de desenvolvimento e feedback estruturado
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const dados = {
+            "total_oportunidades": 33,
+            "taxa_feedback": 9.1,
+            "pendentes": 30,
+            "liderancas": 4,
+            "oportunidades_tipo": {
+                "Execução do processo": 15,
+                "Tratativa": 11,
+                "Conversa": 4,
+                "Outros": 3
+            },
+            "pilares_qualidade": {
+                "Entendimento e Resolução": 11,
+                "Ferramentas e Investigação": 8,
+                "Comunicação": 7,
+                "Finalização": 4
+            },
+            "indicadores": {
+                "FCR": 17,
+                "CSAT": 9,
+                "TPR": 2,
+                "NPS": 1,
+                "Churn": 1
+            },
+            "times": {
+                "Experiência do Cliente": 26,
+                "Experiência Inteligência": 3,
+                "Sucesso do Cliente": 1
+            },
+            "supervisores": {
+                "Lucas": 12,
+                "Maurício": 10,
+                "Israel": 7,
+                "Joana": 1
+            },
+            "feedback_por_supervisor": {
+                "Lucas": {
+                    "com_feedback": 2,
+                    "sem_feedback": 10
+                },
+                "Maurício": {
+                    "com_feedback": 0,
+                    "sem_feedback": 10
+                },
+                "Israel": {
+                    "com_feedback": 0,
+                    "sem_feedback": 7
+                },
+                "Joana": {
+                    "com_feedback": 1,
+                    "sem_feedback": 0
+                }
+            },
+            "analistas": {
+                "Michel": 9,
+                "Maurício": 4,
+                "Pedro": 4,
+                "Marcos": 3,
+                "Mayara": 3,
+                "Lucas": 2,
+                "Kananda": 1,
+                "Anderson": 1,
+                "Maria Gabriela": 1,
+                "Joana": 1
+            }
+        };
+
+        Chart.defaults.color = '#94a3b8';
+        Chart.defaults.font.family = "'Poppins', sans-serif";
+
+        const chartColors = {
+            primary: '#4ADE80',
+            secondary: '#34D399',
+            tertiary: '#10B981',
+            quaternary: '#6EE7B7',
+            quinary: '#86EFAC',
+            warning: '#fbbf24',
+            danger: '#ef4444'
+        };
+
+        // Chart 1: Tipo de Oportunidade
+        new Chart(document.getElementById('chartTipoOportunidade'), {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(dados.oportunidades_tipo),
+                datasets: [{
+                    data: Object.values(dados.oportunidades_tipo),
+                    backgroundColor: [
+                        chartColors.primary,
+                        chartColors.secondary,
+                        chartColors.tertiary,
+                        chartColors.quaternary
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#0a0f1e'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { padding: 15, font: { size: 11 } } },
+                    tooltip: {
+                        callbacks: {
+                            label: (context) => {
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                return `${context.label}: ${context.parsed} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Chart 2: Pilares
+        new Chart(document.getElementById('chartPilares'), {
+            type: 'bar',
+            data: {
+                labels: Object.keys(dados.pilares_qualidade),
+                datasets: [{
+                    label: 'Ocorrências',
+                    data: Object.values(dados.pilares_qualidade),
+                    backgroundColor: chartColors.primary,
+                    borderRadius: 8,
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { grid: { color: 'rgba(74, 222, 128, 0.1)' }, ticks: { color: '#94a3b8' } },
+                    y: { grid: { display: false }, ticks: { color: '#e2e8f0', font: { size: 11 } } }
+                }
+            }
+        });
+
+        // Chart 3: Indicadores
+        new Chart(document.getElementById('chartIndicadores'), {
+            type: 'bar',
+            data: {
+                labels: Object.keys(dados.indicadores),
+                datasets: [{
+                    label: 'Impactos',
+                    data: Object.values(dados.indicadores),
+                    backgroundColor: [
+                        chartColors.primary,
+                        chartColors.secondary,
+                        chartColors.tertiary,
+                        chartColors.quaternary,
+                        chartColors.quinary
+                    ],
+                    borderRadius: 8,
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { grid: { display: false }, ticks: { color: '#e2e8f0', font: { size: 10 } } },
+                    y: { grid: { color: 'rgba(74, 222, 128, 0.1)' }, ticks: { color: '#94a3b8' } }
+                }
+            }
+        });
+
+        // Chart 4: Times
+        new Chart(document.getElementById('chartTimes'), {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(dados.times),
+                datasets: [{
+                    data: Object.values(dados.times),
+                    backgroundColor: [
+                        chartColors.primary,
+                        chartColors.secondary,
+                        chartColors.tertiary
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#0a0f1e'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { padding: 15, font: { size: 11 } } },
+                    tooltip: {
+                        callbacks: {
+                            label: (context) => {
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                return `${context.label}: ${context.parsed} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Chart 5: Supervisores
+        new Chart(document.getElementById('chartSupervisores'), {
+            type: 'bar',
+            data: {
+                labels: Object.keys(dados.supervisores),
+                datasets: [{
+                    label: 'Oportunidades',
+                    data: Object.values(dados.supervisores),
+                    backgroundColor: [
+                        chartColors.danger,
+                        chartColors.warning,
+                        chartColors.tertiary,
+                        chartColors.primary
+                    ],
+                    borderRadius: 8,
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { grid: { display: false }, ticks: { color: '#e2e8f0' } },
+                    y: { grid: { color: 'rgba(74, 222, 128, 0.1)' }, ticks: { color: '#94a3b8' } }
+                }
+            }
+        });
+
+        // Chart 6: Feedback por Liderança
+        const feedbackData = Object.keys(dados.feedback_por_supervisor).map(sup => {
+            const total = dados.supervisores[sup];
+            const comFeedback = dados.feedback_por_supervisor[sup].com_feedback;
+            return ((comFeedback / total) * 100).toFixed(1);
+        });
+
+        new Chart(document.getElementById('chartFeedbackLideranca'), {
+            type: 'bar',
+            data: {
+                labels: Object.keys(dados.feedback_por_supervisor),
+                datasets: [{
+                    label: 'Taxa de Feedback (%)',
+                    data: feedbackData,
+                    backgroundColor: feedbackData.map(val => 
+                        val >= 50 ? chartColors.primary : 
+                        val > 0 ? chartColors.warning : 
+                        chartColors.danger
+                    ),
+                    borderRadius: 8,
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: (context) => `Taxa: ${context.parsed.y}%`
+                        }
+                    }
+                },
+                scales: {
+                    x: { grid: { display: false }, ticks: { color: '#e2e8f0' } },
+                    y: { 
+                        grid: { color: 'rgba(74, 222, 128, 0.1)' }, 
+                        ticks: { color: '#94a3b8' },
+                        max: 100
+                    }
+                }
+            }
+        });
+
+        // Chart 7: Pilares por Liderança
+        new Chart(document.getElementById('chartPilaresPorLideranca'), {
+            type: 'bar',
+            data: {
+                labels: Object.keys(dados.supervisores),
+                datasets: [
+                    {
+                        label: 'Comunicação',
+                        data: [2, 3, 2, 0],
+                        backgroundColor: chartColors.primary,
+                        borderRadius: 6
+                    },
+                    {
+                        label: 'Entendimento',
+                        data: [3, 4, 2, 1],
+                        backgroundColor: chartColors.secondary,
+                        borderRadius: 6
+                    },
+                    {
+                        label: 'Ferramentas',
+                        data: [6, 2, 1, 0],
+                        backgroundColor: chartColors.tertiary,
+                        borderRadius: 6
+                    },
+                    {
+                        label: 'Finalização',
+                        data: [1, 1, 2, 0],
+                        backgroundColor: chartColors.quaternary,
+                        borderRadius: 6
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { 
+                        position: 'top',
+                        labels: { padding: 15, font: { size: 12 } }
+                    }
+                },
+                scales: {
+                    x: { 
+                        grid: { display: false }, 
+                        ticks: { color: '#e2e8f0', font: { size: 12 } },
+                        stacked: true
+                    },
+                    y: { 
+                        grid: { color: 'rgba(74, 222, 128, 0.1)' }, 
+                        ticks: { color: '#94a3b8' },
+                        stacked: true
+                    }
+                }
+            }
+        });
+
+        // Chart 8: Analistas
+        new Chart(document.getElementById('chartAnalistas'), {
+            type: 'bar',
+            data: {
+                labels: Object.keys(dados.analistas),
+                datasets: [{
+                    label: 'Oportunidades',
+                    data: Object.values(dados.analistas),
+                    backgroundColor: Object.values(dados.analistas).map((val, idx) => 
+                        idx === 0 ? chartColors.danger :
+                        idx === 1 || idx === 2 ? chartColors.warning :
+                        chartColors.primary
+                    ),
+                    borderRadius: 8,
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                plugins: { 
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: (context) => `${context.parsed.x} oportunidades`
+                        }
+                    }
+                },
+                scales: {
+                    x: { 
+                        grid: { color: 'rgba(74, 222, 128, 0.1)' }, 
+                        ticks: { color: '#94a3b8' }
+                    },
+                    y: { 
+                        grid: { display: false }, 
+                        ticks: { color: '#e2e8f0', font: { size: 11 } }
+                    }
+                }
+            }
+        });
+
+        // Chart 9: Pilares por Analista (Top 5)
+        new Chart(document.getElementById('chartPilaresPorAnalista'), {
+            type: 'bar',
+            data: {
+                labels: ['Michel', 'Maurício', 'Pedro', 'Marcos', 'Mayara'],
+                datasets: [
+                    {
+                        label: 'Comunicação',
+                        data: [2, 2, 2, 0, 1],
+                        backgroundColor: chartColors.primary,
+                        borderRadius: 6
+                    },
+                    {
+                        label: 'Entendimento',
+                        data: [7, 0, 1, 0, 1],
+                        backgroundColor: chartColors.secondary,
+                        borderRadius: 6
+                    },
+                    {
+                        label: 'Ferramentas',
+                        data: [0, 1, 0, 3, 1],
+                        backgroundColor: chartColors.tertiary,
+                        borderRadius: 6
+                    },
+                    {
+                        label: 'Finalização',
+                        data: [0, 1, 1, 0, 0],
+                        backgroundColor: chartColors.quaternary,
+                        borderRadius: 6
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { 
+                        position: 'top',
+                        labels: { padding: 15, font: { size: 11 } }
+                    }
+                },
+                scales: {
+                    x: { 
+                        grid: { display: false }, 
+                        ticks: { color: '#e2e8f0', font: { size: 11 } },
+                        stacked: true
+                    },
+                    y: { 
+                        grid: { color: 'rgba(74, 222, 128, 0.1)' }, 
+                        ticks: { color: '#94a3b8' },
+                        stacked: true
+                    }
+                }
+            }
+        });
+
+        // Animação dos números
+        function animateValue(id, start, end, duration, suffix = '') {
+            const obj = document.getElementById(id);
+            const range = end - start;
+            const increment = end > start ? 1 : -1;
+            const stepTime = Math.abs(Math.floor(duration / range));
+            let current = start;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                obj.textContent = current + suffix;
+                if (current === end) {
+                    clearInterval(timer);
+                }
+            }, stepTime);
+        }
+
+        window.addEventListener('load', () => {
+            animateValue('total-oportunidades', 0, dados.total_oportunidades, 1000);
+            animateValue('pendentes', 0, dados.pendentes, 1000);
+            animateValue('liderancas', 0, dados.liderancas, 800);
+            setTimeout(() => {
+                document.getElementById('taxa-feedback').textContent = dados.taxa_feedback + '%';
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
